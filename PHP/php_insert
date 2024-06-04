@@ -1,0 +1,66 @@
+<?php
+$servername = "localhost";
+$dbname = " id22264786_espdata";
+$username = "id22264786_esp323232";
+$password = "Charlotta147*";
+
+//Create an API to allow connection between esp and our site or php script
+$api_key_value = "charlotta";
+$api_key= $SensorData = $LocationData = $value1 = $value2 = $value3 = $reading_time = ""; //copy from DB php admin the $
+
+//This loop help me check if the API key matches so posting values begin
+
+//I will add here later for more values
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $api_key = test_input($_POST["api_key"]);
+    if($api_key == $api_key_value) {
+        $SensorData = test_input($_POST["SensorData"]);
+        $LocationData = test_input($_POST["LocationData"]);
+        $value1 = test_input($_POST["value1"]);
+        $value2 = test_input($_POST["value2"]);
+        $value3 = test_input($_POST["value3"]);
+        
+//Create a connection if any of those values are wrong and don't match connection will fail
+
+        $conn = new mysqli($servername, $username, $password, $dbname);
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        } 
+//Use this to pass the values 
+//I will modify these too 
+
+        $sql = "INSERT INTO ESPData (SensorData, LocationData, value1, value2, value3)
+        VALUES ('" . $SensorData . "', '" . $LocationData . "', '" . $value1 . "', '" . $value2 . "', '" . $value3 . "')";
+ 
+ //This will check if if there is a conncetion to the SQL 
+
+        if ($conn->query($sql) === TRUE) {
+            echo "New record created successfully";
+        } 
+        else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
+    
+        $conn->close();
+    }
+    else {
+        echo "Wrong API Key";
+    }
+
+}
+
+//Add this so if the esp is offline or not sending any data print this 
+
+else {
+    echo "No data posted HTTP POST.";
+}
+
+//This fonction make sure that the data we recieve is clean and as we need it 
+
+function test_input($data) {
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
